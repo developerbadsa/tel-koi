@@ -1,14 +1,14 @@
 import { z } from "zod";
 import { areas } from "@/i18n/dict";
 
-export const queryMosqueSchema = z.object({
+export const queryStationSchema = z.object({
   query: z.string().optional().default(""),
   area: z.string().optional().default(""),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(50).default(20),
 });
 
-export const createMosqueSchema = z.object({
+export const createStationSchema = z.object({
   name: z.string().trim().min(2).max(120),
   area: z.enum(areas),
   address: z.string().trim().max(200).optional().default(""),

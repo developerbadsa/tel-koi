@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDb } from "@/lib/db";
 import { env } from "@/lib/env";
 import { ChangeLog } from "@/models/ChangeLog";
-import { Mosque } from "@/models/Mosque";
+import { Station } from "@/models/Station";
 import { Vote } from "@/models/Vote";
 
 export async function POST(req: Request) {
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
 
   await connectDb();
   const voteResult = await Vote.deleteMany({});
-  const mosqueResult = await Mosque.updateMany(
+  const stationResult = await Station.updateMany(
     {},
     { $set: { "aggregates.yesCount": 0, "aggregates.noCount": 0, "aggregates.lastVotedAt": null, "aggregates.confidenceScore": 0.5 } },
   );
@@ -20,13 +20,13 @@ export async function POST(req: Request) {
     type: "DAILY_RESET",
     ranAt: new Date(),
     clearedVotesCount: voteResult.deletedCount ?? 0,
-    affectedMosquesCount: mosqueResult.modifiedCount,
+    affectedStationsCount: stationResult.modifiedCount,
   });
 
   return NextResponse.json({
     ok: true,
     dhakaScheduledAt: "21:00 Asia/Dhaka",
     clearedVotesCount: voteResult.deletedCount ?? 0,
-    affectedMosquesCount: mosqueResult.modifiedCount,
+    affectedStationsCount: stationResult.modifiedCount,
   });
 }

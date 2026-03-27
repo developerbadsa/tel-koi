@@ -1,8 +1,9 @@
 import { Schema, model, models, type Model } from "mongoose";
+import { siteConfig } from "@/lib/site";
 
-export interface MosqueDoc {
+export interface StationDoc {
   name: string;
-  district: "Lalmonirhat";
+  district: string;
   area: string;
   address: string;
   location: {
@@ -21,10 +22,10 @@ export interface MosqueDoc {
   updatedAt: Date;
 }
 
-const mosqueSchema = new Schema<MosqueDoc>(
+const stationSchema = new Schema<StationDoc>(
   {
     name: { type: String, required: true, trim: true, maxlength: 120 },
-    district: { type: String, required: true, enum: ["Lalmonirhat"], default: "Lalmonirhat" },
+    district: { type: String, required: true, default: siteConfig.district },
     area: { type: String, required: true },
     address: { type: String, default: "" },
     location: {
@@ -43,7 +44,7 @@ const mosqueSchema = new Schema<MosqueDoc>(
   { timestamps: true },
 );
 
-mosqueSchema.index({ location: "2dsphere" });
-mosqueSchema.index({ area: 1, status: 1 });
+stationSchema.index({ location: "2dsphere" });
+stationSchema.index({ area: 1, status: 1 });
 
-export const Mosque = (models.Mosque as Model<MosqueDoc>) || model<MosqueDoc>("Mosque", mosqueSchema);
+export const Station = (models.Station as Model<StationDoc>) || model<StationDoc>("Station", stationSchema);

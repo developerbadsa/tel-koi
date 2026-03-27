@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "./../../public/logo.png";
-import { HeaderPrayerTimer } from "@/components/HeaderPrayerTimer";
+import { HeaderInfoStrip } from "@/components/HeaderInfoStrip";
+import { siteConfig } from "@/lib/site";
 
 export function SiteHeader() {
   const [compact, setCompact] = useState(false);
@@ -19,16 +20,22 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-20 border-b border-orange-100 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
       <div className={`mx-auto max-w-5xl px-3 transition-all duration-200 md:px-4 ${compact ? "py-1.5 md:py-2" : "py-2 md:py-3"}`}>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Link href="/" className="shrink-0 text-xl font-black">
             <Image
               src={logo}
               className={`transition-all duration-200 ${compact ? "w-[72px] md:w-[116px]" : "w-[84px] md:w-[130px]"}`}
-              alt="PetrolKoiLal Logo"
+              alt={`${siteConfig.name} logo`}
               width={130}
               height={0}
             />
           </Link>
+          <div className="min-w-0">
+            <Link href="/" className="block text-sm font-black uppercase tracking-[0.16em] text-zinc-900 md:text-base">
+              {siteConfig.shortName}
+            </Link>
+            <p className={`text-zinc-500 transition-all duration-200 ${compact ? "text-[10px] md:text-[11px]" : "text-[11px] md:text-xs"}`}>{siteConfig.district} fuel update board</p>
+          </div>
           <div className="ml-auto flex items-center gap-2">
             <Link
               href="/about"
@@ -49,7 +56,7 @@ export function SiteHeader() {
           </div>
         </div>
         <div className={`overflow-hidden transition-all duration-200 ${compact ? "mt-1 max-h-12" : "mt-2 max-h-20 md:mt-2.5"}`}>
-          <HeaderPrayerTimer compact={compact} />
+          <HeaderInfoStrip compact={compact} />
         </div>
       </div>
     </header>

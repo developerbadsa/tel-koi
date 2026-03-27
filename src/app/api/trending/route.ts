@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     { $match: { createdAt: { $gte: since } } },
     {
       $group: {
-        _id: "$mosqueId",
+        _id: "$stationId",
         yes: { $sum: { $cond: [{ $eq: ["$voteType", "YES"] }, 1, 0] } },
         no: { $sum: { $cond: [{ $eq: ["$voteType", "NO"] }, 1, 0] } },
         total: { $sum: 1 },
@@ -21,13 +21,13 @@ export async function GET(req: NextRequest) {
     },
     {
       $lookup: {
-        from: "mosques",
+        from: "stations",
         localField: "_id",
         foreignField: "_id",
-        as: "mosque",
+        as: "station",
       },
     },
-    { $unwind: "$mosque" },
+    { $unwind: "$station" },
   ]);
 
   const byYes = [...rows].sort((a, b) => b.yes - a.yes).slice(0, 5);

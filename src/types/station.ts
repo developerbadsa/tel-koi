@@ -1,4 +1,4 @@
-export type MosqueItem = {
+export type StationItem = {
   _id: string;
   name: string;
   area: string;
@@ -17,7 +17,7 @@ export type MosqueItem = {
 export type TrendingRow = {
   _id: string;
   total: number;
-  mosque: { name: string };
+  station: { name: string };
 };
 
 export type HomeDictionary = {

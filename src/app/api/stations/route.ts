@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDb } from "@/lib/db";
 import { env } from "@/lib/env";
 import { getVoterKeyHash } from "@/lib/hash";
-import { createMosqueSchema, queryMosqueSchema } from "@/lib/validation";
-import { Mosque } from "@/models/Mosque";
+import { siteConfig } from "@/lib/site";
+import { createStationSchema, queryStationSchema } from "@/lib/validation";
+import { Station } from "@/models/Station";
 import { SubmissionRate } from "@/models/SubmissionRate";
 
 export async function GET(req: NextRequest) {
   await connectDb();
-  const parse = queryMosqueSchema.safeParse(Object.fromEntries(req.nextUrl.searchParams.entries()));
+  const parse = queryStationSchema.safeParse(Object.fromEntries(req.nextUrl.searchParams.entries()));
   if (!parse.success) return NextResponse.json({ error: parse.error.flatten() }, { status: 400 });
 
   const { query, area, page, limit } = parse.data;
@@ -23,12 +24,12 @@ export async function GET(req: NextRequest) {
   }
 
   const [items, total] = await Promise.all([
-    Mosque.find(filter)
+    Station.find(filter)
       .sort({ "aggregates.lastVotedAt": -1, createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean(),
-    Mosque.countDocuments(filter),
+    Station.countDocuments(filter),
   ]);
 
   const res = NextResponse.json({ items, total, page, limit });
@@ -39,22 +40,22 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   await connectDb();
   const body = await req.json();
-  const parse = createMosqueSchema.safeParse(body);
+  const parse = createStationSchema.safeParse(body);
   if (!parse.success) return NextResponse.json({ error: parse.error.flatten() }, { status: 400 });
   const voterKeyHash = await getVoterKeyHash();
   const now = new Date();
   const dayKey = now.toISOString().slice(0, 10);
-  const limit = env.DAILY_MOSQUE_ADD_LIMIT;
+  const limit = env.DAILY_STATION_ADD_LIMIT;
 
   const tracker = await SubmissionRate.findOne({ voterKeyHash }).lean();
   if (tracker && tracker.dayKey === dayKey && tracker.dailyCount >= limit) {
-    return NextResponse.json({ error: `আজকের limit শেষ। দিনে সর্বোচ্চ ${limit}টা add করা যাবে।` }, { status: 429 });
+    return NextResponse.json({ error: `আজকের limit শেষ। দিনে সর্বোচ্চ ${limit}টি স্টেশন add করা যাবে।` }, { status: 429 });
   }
 
   const { name, area, address, lat, lng } = parse.data;
-  const created = await Mosque.create({
+  const created = await Station.create({
     name,
-    district: "Lalmonirhat",
+    district: siteConfig.district,
     area,
     address,
     status: "ACTIVE",

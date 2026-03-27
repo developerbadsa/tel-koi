@@ -11,7 +11,7 @@ global.mongooseConn = globalCache;
 export async function connectDb() {
   if (globalCache.conn) return globalCache.conn;
   if (!globalCache.promise) {
-    globalCache.promise = mongoose.connect(env.MONGODB_URI, { dbName: "biranikothaylal" });
+    globalCache.promise = mongoose.connect(env.MONGODB_URI, { dbName: env.MONGODB_DB_NAME });
   }
   globalCache.conn = await globalCache.promise;
   return globalCache.conn;

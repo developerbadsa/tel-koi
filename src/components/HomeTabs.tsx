@@ -1,15 +1,15 @@
-﻿"use client";
+"use client";
 
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-import { MosqueCard } from "@/components/MosqueCard";
+import { StationCard } from "@/components/StationCard";
 import { areas } from "@/i18n/dict";
-import type { HomeDictionary, MosqueItem, TrendingRow } from "@/types/mosque";
+import type { HomeDictionary, StationItem, TrendingRow } from "@/types/station";
 
 const DynamicMap = dynamic(() => import("@/components/MapView").then((m) => m.MapView), { ssr: false });
 
 type Props = {
-  mosques: MosqueItem[];
+  stations: StationItem[];
   trending: {
     topYes: TrendingRow[];
     topNo: TrendingRow[];
@@ -54,20 +54,20 @@ function TrendingBlock({ title, rows, tone }: TrendingBlockProps) {
           {rows.map((r, idx) => (
             <div key={r._id.toString()} className="flex items-center justify-between rounded-xl bg-white px-3 py-2 text-sm">
               <p className="line-clamp-1 font-medium text-zinc-700">
-                {idx + 1}. {r.mosque.name}
+                {idx + 1}. {r.station.name}
               </p>
               <span className="rounded-lg bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-700">{r.total}</span>
             </div>
           ))}
         </div>
       ) : (
-        <p className="rounded-xl bg-white px-3 py-2 text-sm text-zinc-500">এখনো নতুন রিপোর্ট নাই।</p>
+        <p className="rounded-xl bg-white px-3 py-2 text-sm text-zinc-500">এখনও নতুন রিপোর্ট নেই।</p>
       )}
     </article>
   );
 }
 
-export function HomeTabs({ mosques, trending, t }: Props) {
+export function HomeTabs({ stations, trending, t }: Props) {
   const [query, setQuery] = useState("");
   const [area, setArea] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -75,12 +75,12 @@ export function HomeTabs({ mosques, trending, t }: Props) {
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    return mosques.filter((m) => {
+    return stations.filter((m) => {
       const areaOk = area ? m.area === area : true;
       const text = `${m.name} ${m.address ?? ""} ${m.area}`.toLowerCase();
       return areaOk && (!q || text.includes(q));
     });
-  }, [mosques, query, area]);
+  }, [stations, query, area]);
 
   const suggestions = useMemo<Suggestion[]>(() => {
     const q = query.trim().toLowerCase();
@@ -89,7 +89,7 @@ export function HomeTabs({ mosques, trending, t }: Props) {
     const seen = new Set<string>();
     const list: Suggestion[] = [];
 
-    for (const m of mosques) {
+    for (const m of stations) {
       const candidates: Suggestion[] = [
         { key: `name-${m._id}`, label: m.name, type: "name" },
         { key: `area-${m._id}`, label: m.area, type: "area" },
@@ -107,7 +107,7 @@ export function HomeTabs({ mosques, trending, t }: Props) {
     }
 
     return list;
-  }, [mosques, query]);
+  }, [stations, query]);
 
   const uniqueAreas = useMemo(() => new Set(filtered.map((m) => m.area)).size, [filtered]);
   const trendingTotal = trending.topYes.length + trending.topNo.length + trending.mostActive.length;
@@ -152,7 +152,7 @@ export function HomeTabs({ mosques, trending, t }: Props) {
               href="#list-section"
               className="inline-flex w-full shrink-0 items-center justify-center rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 sm:w-auto"
             >
-              খোঁজো
+              খুঁজুন
             </a>
           </div>
 
@@ -190,11 +190,11 @@ export function HomeTabs({ mosques, trending, t }: Props) {
 
       <div className="grid gap-2 sm:grid-cols-3 md:gap-3">
         <div className="rounded-2xl border border-orange-200 bg-orange-50/80 p-4">
-          <p className="text-xs font-semibold tracking-wide text-orange-700">কয় জায়গায় তেল আছে</p>
+          <p className="text-xs font-semibold tracking-wide text-orange-700">দেখানো হচ্ছে</p>
           <p className="mt-1 text-2xl font-extrabold text-orange-900">{filtered.length}</p>
         </div>
         <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-          <p className="text-xs font-semibold tracking-wide text-zinc-600">কয়টা এলাকা</p>
+          <p className="text-xs font-semibold tracking-wide text-zinc-600">এলাকার সংখ্যা</p>
           <p className="mt-1 text-2xl font-extrabold text-zinc-900">{uniqueAreas}</p>
         </div>
         <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
@@ -219,16 +219,16 @@ export function HomeTabs({ mosques, trending, t }: Props) {
         <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h3 className="text-lg font-bold text-zinc-900">{t.list}</h3>
           <p className="text-sm text-zinc-500">
-            মোট {filtered.length}টা ফল {filtered.length > 0 ? `(দেখাচ্ছে ${startItem}-${endItem})` : ""}
+            মোট {filtered.length}টি ফলাফল {filtered.length > 0 ? `(দেখানো হচ্ছে ${startItem}-${endItem})` : ""}
           </p>
         </div>
         {filtered.length > 0 ? (
           <>
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {paginated.map((mosque) => (
-                <MosqueCard
-                  key={mosque._id.toString()}
-                  mosque={mosque}
+              {paginated.map((station) => (
+                <StationCard
+                  key={station._id.toString()}
+                  station={station}
                   yesLabel={t.yes}
                   noLabel={t.no}
                   openMapsLabel={t.openMaps}
@@ -271,15 +271,13 @@ export function HomeTabs({ mosques, trending, t }: Props) {
             )}
           </>
         ) : (
-          <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800">
-            এই ফিল্টারে কোন লোকেশন পাওয়া গেল না।
-          </div>
+          <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800">এই ফিল্টারে কোনো স্টেশন পাওয়া যায়নি।</div>
         )}
       </section>
 
       <section id="map-section" className="space-y-3">
         <h3 className="text-lg font-bold text-zinc-900">{t.map}</h3>
-        <DynamicMap mosques={filtered} />
+        <DynamicMap stations={filtered} />
       </section>
 
       <section id="trending-section" className="space-y-3">

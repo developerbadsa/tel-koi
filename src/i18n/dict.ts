@@ -1,4 +1,6 @@
-﻿export type Lang = "en" | "bn";
+import { siteConfig } from "@/lib/site";
+
+export type Lang = "en" | "bn";
 
 export const areas = [
   "Lalmonirhat Sadar",
@@ -9,24 +11,24 @@ export const areas = [
 ] as const;
 
 const common = {
-  appName: "PetrolKoiLal",
-  tagline: "লালমনিরহাটের মানুষে মিলে পেট্রোল/ডিজেল পাম্পের লাইভ খবর",
-  addMosque: "স্টেশন যোগ দাও",
-  about: "এই সাইটের কথা",
-  search: "পাম্প/স্টেশনের নাম, ঠিকানা, এলাকা লিখো",
+  appName: siteConfig.name,
+  tagline: "লালমনিরহাটের পাম্পের লাইভ কমিউনিটি আপডেট",
+  addStation: "পাম্প যোগ করুন",
+  about: "আমাদের কথা",
+  search: "পাম্পের নাম, ঠিকানা, এলাকা লিখুন",
   allAreas: "সব এলাকা",
   list: "তালিকা",
   map: "ম্যাপ",
-  trending: "চলতি খবর",
+  trending: "চলতি আপডেট",
   yes: "তেল আছে",
-  no: "তেল নাই",
-  openMaps: "গুগল ম্যাপে খুলো",
-  lastReport: "শেষ খবর",
-  confidence: "ভরসার মান",
+  no: "তেল নেই",
+  openMaps: "গুগল ম্যাপে খুলুন",
+  lastReport: "সর্বশেষ রিপোর্ট",
+  confidence: "বিশ্বাসের মান",
   votes: "ভোট",
-  mostActive: "বেশি সক্রিয়",
+  mostActive: "সবচেয়ে সক্রিয়",
   topYes: "সবচেয়ে বেশি আছে",
-  topNo: "সবচেয়ে বেশি নাই",
+  topNo: "সবচেয়ে বেশি নেই",
 };
 
 export const dict = {

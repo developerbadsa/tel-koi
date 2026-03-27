@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 
 import dynamic from "next/dynamic";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { areas } from "@/i18n/dict";
+import { siteConfig } from "@/lib/site";
 
 const DynamicMapPicker = dynamic(() => import("@/components/MapPicker").then((m) => m.MapPicker), { ssr: false });
 
@@ -31,7 +32,7 @@ function isWithinServiceArea(lat: number, lng: number) {
 function buildLocationQuery(raw: string, selectedArea: string) {
   const parts = [raw.trim()];
   if (selectedArea) parts.push(selectedArea);
-  parts.push("Lalmonirhat", "Bangladesh");
+  parts.push(siteConfig.district, siteConfig.country);
   return parts.filter(Boolean).join(", ");
 }
 
@@ -39,8 +40,8 @@ function rankResult(result: GeoSearchResult, selectedArea: string) {
   const text = result.display_name.toLowerCase();
   let score = result.importance ?? 0;
   if (selectedArea && text.includes(selectedArea.toLowerCase())) score += 4;
-  if (text.includes("lalmonirhat")) score += 3;
-  if (text.includes("bangladesh")) score += 1;
+  if (text.includes(siteConfig.district.toLowerCase())) score += 3;
+  if (text.includes(siteConfig.country.toLowerCase())) score += 1;
   return score;
 }
 
@@ -85,7 +86,7 @@ export default function AddPage() {
         if (ranked[0]) {
           setLat(clamp(Number(ranked[0].lat), MIN_LAT, MAX_LAT));
           setLng(clamp(Number(ranked[0].lon), MIN_LNG, MAX_LNG));
-          setGeoStatus("নিকটতম ম্যাচ ম্যাপে দেখানো হইছে। ঠিক থাকলে লিস্ট থেকে সিলেক্ট করো বা পিন ঠিক করো।");
+          setGeoStatus("নিকটতম ম্যাচ ম্যাপে দেখানো হয়েছে। ঠিক থাকলে লিস্ট থেকে সিলেক্ট করুন বা পিন ঠিক করুন।");
         }
       } catch {
         if (!controller.signal.aborted) setSearchResults([]);
@@ -109,7 +110,7 @@ export default function AddPage() {
   const onUseCurrentLocation = () => {
     const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
     if (!window.isSecureContext && !isLocalhost) {
-      setGeoStatus("Current location পেতে HTTPS লাগে। এই সাইটটা HTTPS এ খুলে আবার চেষ্টা দাও।");
+      setGeoStatus("Current location পেতে HTTPS লাগে। সাইটটা HTTPS এ খুলে আবার চেষ্টা করুন।");
       return;
     }
 
@@ -118,7 +119,7 @@ export default function AddPage() {
       return;
     }
 
-    setGeoStatus("লোকেশন পারমিশন চাইতেছি...");
+    setGeoStatus("লোকেশন পারমিশন চাওয়া হচ্ছে...");
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const rawLat = position.coords.latitude;
@@ -129,24 +130,24 @@ export default function AddPage() {
         setGeoAccuracy(position.coords.accuracy ?? null);
         setGeoStatus(
           inArea
-            ? "তোমার বর্তমান লোকেশন ধরা গেছে। চাইলে পিন টেনে ঠিক করি নাও।"
-            : "তোমার বর্তমান লোকেশন সার্ভিস এলাকার বাইরে। তাই ম্যাপে নিকটতম allowed boundary দেখানো হচ্ছে, পিন টেনে সঠিক লোকেশন ঠিক করো।",
+            ? "বর্তমান লোকেশন পাওয়া গেছে। চাইলে পিন টেনে আরও ঠিক করতে পারেন।"
+            : "লোকেশন সার্ভিস এলাকার বাইরে। তাই কাছাকাছি অনুমোদিত বাউন্ডারিতে পিন দেখানো হয়েছে, চাইলে টেনে ঠিক করুন।",
         );
       },
       (error) => {
         if (error.code === 1) {
-          setGeoStatus("লোকেশন পারমিশন বন্ধ আছে। পারমিশন দিয়া আবার দাও।");
+          setGeoStatus("লোকেশন পারমিশন বন্ধ আছে। পারমিশন দিয়ে আবার চেষ্টা করুন।");
           return;
         }
         if (error.code === 2) {
-          setGeoStatus("লোকেশন provider (GPS/Network) থেকে অবস্থান পাওয়া যায় নাই। একটু পরে আবার চেষ্টা দাও।");
+          setGeoStatus("GPS/Network থেকে অবস্থান পাওয়া যায়নি। একটু পরে আবার চেষ্টা করুন।");
           return;
         }
         if (error.code === 3) {
-          setGeoStatus("লোকেশন নিতে বেশি সময় লাগছে (timeout)। নেট/GPS অন রেখে আবার চেষ্টা দাও।");
+          setGeoStatus("লোকেশন নিতে বেশি সময় লাগছে। নেট বা GPS অন রেখে আবার চেষ্টা করুন।");
           return;
         }
-        setGeoStatus("লোকেশন ধরা গেল না, আবার চেষ্টা দাও।");
+        setGeoStatus("লোকেশন ধরা গেল না, আবার চেষ্টা করুন।");
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
     );
@@ -158,7 +159,7 @@ export default function AddPage() {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!locationTouched) {
-      setMessage("আগে ম্যাপে সঠিক লোকেশন ঠিক করো।");
+      setMessage("আগে ম্যাপে সঠিক লোকেশন ঠিক করুন।");
       return;
     }
 
@@ -185,17 +186,17 @@ export default function AddPage() {
       }, 1400);
       return;
     }
-    setMessage(data.error ?? "কাজটা হয় নাই।");
+    setMessage(data.error ?? "কাজটি সম্পন্ন হয়নি।");
   };
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">স্টেশন লোকেশন যোগ দেও</h1>
+      <h1 className="text-2xl font-semibold">নতুন পাম্প লোকেশন যোগ করুন</h1>
       <form className="space-y-4 rounded-2xl border border-orange-100 bg-white p-4 shadow-soft" onSubmit={onSubmit}>
-        <input className="w-full rounded-xl border border-zinc-200 p-2" name="name" required minLength={3} maxLength={80} placeholder="পাম্প/স্টেশনের নাম" />
+        <input className="w-full rounded-xl border border-zinc-200 p-2" name="name" required minLength={3} maxLength={80} placeholder="পাম্প বা স্টেশনের নাম" />
         <select className="w-full rounded-xl border border-zinc-200 p-2" name="area" required value={selectedArea} onChange={(e) => setSelectedArea(e.target.value)}>
           <option value="" disabled>
-            এলাকা জানান
+            এলাকা নির্বাচন করুন
           </option>
           {areas.map((a) => (
             <option key={a} value={a}>
@@ -203,18 +204,18 @@ export default function AddPage() {
             </option>
           ))}
         </select>
-        <input className="w-full rounded-xl border border-zinc-200 p-2" name="address" maxLength={140} placeholder="ঠিকানা (চাইলে)" />
+        <input className="w-full rounded-xl border border-zinc-200 p-2" name="address" maxLength={140} placeholder="ঠিকানা (ঐচ্ছিক)" />
 
         <div className="rounded-2xl border border-orange-100 bg-orange-50/40 p-3">
           <label className="mb-1 block text-sm font-medium text-zinc-700" htmlFor="location-search">
-            নাম/বাজার/রোড লিখো, তারপর সঠিক পিনে সেট করো
+            নাম, বাজার, বা রোড লিখুন, তারপর সঠিক পিন বসান
           </label>
           <input
             id="location-search"
             value={locationQuery}
             onChange={(e) => setLocationQuery(e.target.value)}
             className="w-full rounded-xl border border-orange-200 bg-white p-2"
-            placeholder="এলাকা/বাজার/রোড লিখো"
+            placeholder="এলাকা বা বাজারের নাম লিখুন"
           />
           <div className="mt-2 flex flex-wrap gap-2">
             <button
@@ -222,14 +223,14 @@ export default function AddPage() {
               onClick={onUseCurrentLocation}
               className="rounded-xl border border-orange-300 bg-orange-50 px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-100"
             >
-              আমার বর্তমান লোকেশন ব্যবহার করো
+              আমার বর্তমান লোকেশন ব্যবহার করুন
             </button>
-            {searching && <p className="text-sm text-zinc-500">খুঁজতেছি...</p>}
+            {searching && <p className="text-sm text-zinc-500">খোঁজা হচ্ছে...</p>}
           </div>
           {geoStatus && <p className="mt-2 text-sm text-zinc-600">{geoStatus}</p>}
           {geoAccuracy !== null && (
             <p className="mt-1 text-xs text-zinc-500">
-              জিপিএস এক্যুরেসি: প্রায় {Math.round(geoAccuracy)} মিটার {geoAccuracy > 100 ? "(পিন ম্যানুয়ালি ঠিক করা ভালো)" : ""}
+              GPS accuracy: প্রায় {Math.round(geoAccuracy)} মিটার {geoAccuracy > 100 ? "(ম্যানুয়ালি পিন ঠিক করা ভালো)" : ""}
             </p>
           )}
           {searchResults.length > 0 && (
@@ -242,7 +243,7 @@ export default function AddPage() {
                     pickLocation(Number(r.lat), Number(r.lon));
                     setLocationQuery(r.display_name);
                     setSearchResults([]);
-                    setGeoStatus("লোকেশন সিলেক্ট করা হয়েছে। চাইলে পিন টেনে আরো ঠিক করো।");
+                    setGeoStatus("লোকেশন সিলেক্ট করা হয়েছে। চাইলে পিন টেনে আরও ঠিক করুন।");
                   }}
                   className="block w-full rounded-lg px-2 py-1.5 text-left text-sm text-zinc-700 hover:bg-orange-50"
                 >
@@ -254,7 +255,7 @@ export default function AddPage() {
         </div>
 
         <p className="text-sm text-zinc-600">{coordinateText}</p>
-        <p className="text-xs text-zinc-500">টিপস: ম্যাপে ক্লিক বা পিন টেনে পাম্পের গেইটের কাছে পিন বসাও।</p>
+        <p className="text-xs text-zinc-500">টিপস: ম্যাপে ক্লিক করে বা পিন টেনে পাম্পের গেটের কাছাকাছি পিন বসান।</p>
 
         <DynamicMapPicker
           lat={lat}
@@ -265,9 +266,9 @@ export default function AddPage() {
         />
 
         <button className="rounded-xl bg-orange-600 px-4 py-2 text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-60" type="submit" disabled={!canSubmit}>
-          সাবমিট দাও
+          সাবমিট করুন
         </button>
-        {!locationTouched && <p className="text-xs text-orange-700">সাবমিটের আগে ম্যাপে লোকেশন একবার ঠিক করে নাও।</p>}
+        {!locationTouched && <p className="text-xs text-orange-700">সাবমিটের আগে ম্যাপে লোকেশন একবার ঠিক করুন।</p>}
         {message && <p className="text-sm text-zinc-600">{message}</p>}
       </form>
       {showSuccessPopup && (

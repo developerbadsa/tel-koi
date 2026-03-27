@@ -2,16 +2,17 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { getLang } from "@/lib/lang";
 import { env } from "@/lib/env";
+import { siteConfig } from "@/lib/site";
 import { SiteHeader } from "@/components/SiteHeader";
 
 export const metadata: Metadata = {
-  title: "PetrolKoiLal",
-  description: "লালমনিরহাটের মানুষে মিলে পেট্রোল/ডিজেল পাম্পের খবর",
+  title: siteConfig.name,
+  description: siteConfig.descriptionBn,
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
   alternates: {
     canonical: "/",
   },
-  keywords: ["PetrolKoiLal", "Lalmonirhat", "Petrol", "Diesel", "Station", "Bangladesh", "Community Vote", "Fuel"],
+  keywords: [siteConfig.name, siteConfig.district, "petrol", "diesel", "octane", "fuel station", "Bangladesh", "community update"],
   robots: {
     index: true,
     follow: true,
@@ -22,17 +23,17 @@ export const metadata: Metadata = {
     apple: "/logo.png",
   },
   openGraph: {
-    siteName: "PetrolKoiLal",
-    title: "PetrolKoiLal",
-    description: "লালমনিরহাটের মানুষে মিলে পেট্রোল/ডিজেল পাম্পের খবর",
+    siteName: siteConfig.name,
+    title: siteConfig.name,
+    description: siteConfig.descriptionBn,
     url: env.NEXT_PUBLIC_APP_URL,
     type: "website",
-    images: [{ url: "/logo.png", width: 512, height: 512, alt: "PetrolKoiLal" }],
+    images: [{ url: "/logo.png", width: 512, height: 512, alt: siteConfig.name }],
   },
   twitter: {
     card: "summary",
-    title: "PetrolKoiLal",
-    description: "লালমনিরহাটের মানুষে মিলে পেট্রোল/ডিজেল পাম্পের খবর",
+    title: siteConfig.name,
+    description: siteConfig.descriptionBn,
     images: ["/logo.png"],
   },
 };
@@ -44,12 +45,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     "@graph": [
       {
         "@type": "Organization",
-        name: "PetrolKoiLal",
+        name: siteConfig.name,
         url: env.NEXT_PUBLIC_APP_URL,
       },
       {
         "@type": "WebSite",
-        name: "PetrolKoiLal",
+        name: siteConfig.name,
         url: env.NEXT_PUBLIC_APP_URL,
       },
     ],
