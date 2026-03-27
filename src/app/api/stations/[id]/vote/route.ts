@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { connectDb } from "@/lib/db";
 import { getVoterKeyHash } from "@/lib/hash";
+import { withRouteErrorHandling } from "@/lib/route-handler";
 import { refreshStationAggregates } from "@/lib/station";
 import { voteSchema } from "@/lib/validation";
 import { Station } from "@/models/Station";
 import { Vote } from "@/models/Vote";
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export const POST = withRouteErrorHandling("api.stations.id.vote.post", async (req: Request, { params }: { params: Promise<{ id: string }> }) => {
   await connectDb();
   const { id } = await params;
   if (!mongoose.Types.ObjectId.isValid(id)) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
@@ -29,4 +30,4 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const aggregates = await refreshStationAggregates(id);
 
   return NextResponse.json({ ok: true, aggregates });
-}
+});

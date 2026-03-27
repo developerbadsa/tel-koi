@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { connectDb } from "@/lib/db";
 import { env } from "@/lib/env";
+import { withRouteErrorHandling } from "@/lib/route-handler";
 import { ChangeLog } from "@/models/ChangeLog";
 import { Station } from "@/models/Station";
 import { Vote } from "@/models/Vote";
 
-export async function POST(req: Request) {
+export const POST = withRouteErrorHandling("api.admin.run-daily-reset.post", async (req: Request) => {
   const auth = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!env.ADMIN_TOKEN || auth !== env.ADMIN_TOKEN) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -29,4 +30,4 @@ export async function POST(req: Request) {
     clearedVotesCount: voteResult.deletedCount ?? 0,
     affectedStationsCount: stationResult.modifiedCount,
   });
-}
+});

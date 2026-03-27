@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDb } from "@/lib/db";
 import { env } from "@/lib/env";
 import { getVoterKeyHash } from "@/lib/hash";
+import { withRouteErrorHandling } from "@/lib/route-handler";
 import { siteConfig } from "@/lib/site";
 import { createStationSchema, queryStationSchema } from "@/lib/validation";
 import { Station } from "@/models/Station";
 import { SubmissionRate } from "@/models/SubmissionRate";
 
-export async function GET(req: NextRequest) {
+export const GET = withRouteErrorHandling("api.stations.get", async (req: NextRequest) => {
   await connectDb();
   const parse = queryStationSchema.safeParse(Object.fromEntries(req.nextUrl.searchParams.entries()));
   if (!parse.success) return NextResponse.json({ error: parse.error.flatten() }, { status: 400 });
@@ -35,9 +36,9 @@ export async function GET(req: NextRequest) {
   const res = NextResponse.json({ items, total, page, limit });
   res.headers.set("Cache-Control", "public, s-maxage=30, stale-while-revalidate=60");
   return res;
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withRouteErrorHandling("api.stations.post", async (req: NextRequest) => {
   await connectDb();
   const body = await req.json();
   const parse = createStationSchema.safeParse(body);
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ item: created }, { status: 201 });
-}
+});
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

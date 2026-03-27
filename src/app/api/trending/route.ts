@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDb } from "@/lib/db";
+import { withRouteErrorHandling } from "@/lib/route-handler";
 import { trendingSchema } from "@/lib/validation";
 import { Vote } from "@/models/Vote";
 
-export async function GET(req: NextRequest) {
+export const GET = withRouteErrorHandling("api.trending.get", async (req: NextRequest) => {
   await connectDb();
   const parse = trendingSchema.safeParse(Object.fromEntries(req.nextUrl.searchParams.entries()));
   if (!parse.success) return NextResponse.json({ error: parse.error.flatten() }, { status: 400 });
@@ -37,4 +38,4 @@ export async function GET(req: NextRequest) {
   const res = NextResponse.json({ topYes: byYes, topNo: byNo, mostActive: byActive });
   res.headers.set("Cache-Control", "public, s-maxage=30, stale-while-revalidate=60");
   return res;
-}
+});
