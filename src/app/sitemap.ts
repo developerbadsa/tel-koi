@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   try {
-    await connectDb();
+    await connectDb("read");
   } catch (error) {
     console.error("[sitemap] Failed to connect to MongoDB.", error);
     return staticRoutes;

@@ -5,7 +5,7 @@ import { trendingSchema } from "@/lib/validation";
 import { Vote } from "@/models/Vote";
 
 export const GET = withRouteErrorHandling("api.trending.get", async (req: NextRequest) => {
-  await connectDb();
+  await connectDb("read");
   const parse = trendingSchema.safeParse(Object.fromEntries(req.nextUrl.searchParams.entries()));
   if (!parse.success) return NextResponse.json({ error: parse.error.flatten() }, { status: 400 });
 

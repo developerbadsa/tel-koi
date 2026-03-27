@@ -22,7 +22,7 @@ export function LanguageToggle({ current }: { current: "en" | "bn" }) {
         aria-label="বাংলা"
         onClick={() => setLang("en")}
         disabled={pending}
-        className={`rounded-xl border px-3 py-1 text-sm ${current === "en" ? "border-orange-600 bg-orange-600 text-white" : "border-zinc-200 bg-white text-zinc-700"}`}
+        className={`rounded-xl border px-3 py-1 text-sm ${current === "en" ? "border-[color:var(--petrol)] bg-[var(--petrol)] text-white" : "border-[color:var(--border)] bg-[rgba(255,255,255,0.8)] text-[color:var(--text-muted)]"}`}
       >
         বাংলা
       </button>
@@ -30,7 +30,7 @@ export function LanguageToggle({ current }: { current: "en" | "bn" }) {
         aria-label="রংপুরিয়া"
         onClick={() => setLang("bn")}
         disabled={pending}
-        className={`rounded-xl border px-3 py-1 text-sm ${current === "bn" ? "border-orange-600 bg-orange-600 text-white" : "border-zinc-200 bg-white text-zinc-700"}`}
+        className={`rounded-xl border px-3 py-1 text-sm ${current === "bn" ? "border-[color:var(--petrol)] bg-[var(--petrol)] text-white" : "border-[color:var(--border)] bg-[rgba(255,255,255,0.8)] text-[color:var(--text-muted)]"}`}
       >
         রংপুরিয়া
       </button>

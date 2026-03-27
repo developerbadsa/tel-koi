@@ -1,0 +1,42 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Petrol Koi Lalmonirhat logo</title>
+  <desc id="desc">A Lalmonirhat-inspired fuel tracker logo with a red sun, location pin, river curve, and railway track.</desc>
+  <defs>
+    <linearGradient id="bgGlow" x1="48" y1="32" x2="208" y2="224" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8EA"/>
+      <stop offset="1" stop-color="#F4E8D0"/>
+    </linearGradient>
+    <linearGradient id="sunGlow" x1="128" y1="52" x2="128" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F45151"/>
+      <stop offset="1" stop-color="#D52B2B"/>
+    </linearGradient>
+    <linearGradient id="pinFill" x1="98" y1="72" x2="166" y2="182" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#154F4A"/>
+      <stop offset="1" stop-color="#0B3B37"/>
+    </linearGradient>
+    <linearGradient id="riverFill" x1="60" y1="150" x2="206" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A4E0D8"/>
+      <stop offset="1" stop-color="#2C8E84"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="128" cy="128" r="108" fill="url(#bgGlow)"/>
+  <circle cx="128" cy="128" r="108" stroke="#D53A3A" stroke-width="12"/>
+  <circle cx="128" cy="84" r="38" fill="url(#sunGlow)" opacity="0.9"/>
+  <path d="M58 142C80 126 104 120 128 120C152 120 176 126 198 142V164H58V142Z" fill="#F6D8A7" opacity="0.95"/>
+  <path d="M52 170C82 152 114 148 140 154C163 159 184 158 206 144V174C186 188 160 194 132 190C101 185 76 189 52 204V170Z" fill="url(#riverFill)"/>
+
+  <path d="M96 196L118 122" stroke="#174640" stroke-width="9" stroke-linecap="round"/>
+  <path d="M160 196L138 122" stroke="#174640" stroke-width="9" stroke-linecap="round"/>
+  <path d="M110 173H146" stroke="#D89A2F" stroke-width="7" stroke-linecap="round"/>
+  <path d="M105 158H151" stroke="#D89A2F" stroke-width="7" stroke-linecap="round"/>
+  <path d="M101 143H155" stroke="#D89A2F" stroke-width="7" stroke-linecap="round"/>
+
+  <path d="M128 54C101.49 54 80 75.49 80 102C80 136.68 111.53 168.82 128 188C144.47 168.82 176 136.68 176 102C176 75.49 154.51 54 128 54Z" fill="url(#pinFill)"/>
+  <circle cx="128" cy="101" r="22" fill="#F9F3E6"/>
+  <path d="M124 88C124 84.69 126.69 82 130 82H135C138.31 82 141 84.69 141 88V113H124V88Z" fill="#E05757"/>
+  <path d="M121 91H144" stroke="#E05757" stroke-width="5" stroke-linecap="round"/>
+  <path d="M135 89H145C149.42 89 153 92.58 153 97V105" stroke="#E05757" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M149 105C149 108.31 151.69 111 155 111H158" stroke="#E05757" stroke-width="5" stroke-linecap="round"/>
+  <rect x="127" y="96" width="11" height="8" rx="2" fill="#F9F3E6"/>
+</svg>

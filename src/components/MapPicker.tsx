@@ -11,7 +11,7 @@ const BANGLADESH_BOUNDS: [[number, number], [number, number]] = [
 ];
 
 const pickerMarkerIcon = divIcon({
-  html: '<span style="display:inline-flex;height:34px;width:34px;align-items:center;justify-content:center;border-radius:9999px;background:#ffffff;border:3px solid #ea580c;box-shadow:0 8px 16px rgba(234,88,12,0.3);font-size:15px;">BD</span>',
+  html: '<span style="display:inline-flex;height:34px;width:34px;align-items:center;justify-content:center;border-radius:9999px;background:#f7fbfa;border:3px solid #13544f;box-shadow:0 10px 20px rgba(11,59,55,0.22);font-size:15px;color:#bf7418;">BD</span>',
   className: "",
   iconAnchor: [17, 17],
   popupAnchor: [0, -16],
@@ -48,7 +48,7 @@ export function MapPicker({ lat, lng, onPick }: { lat: number; lng: number; onPi
   );
 
   return (
-    <div className="h-64 overflow-hidden rounded-xl border">
+    <div className="h-64 overflow-hidden rounded-xl border border-[color:var(--border)] shadow-soft">
       <MapContainer
         center={position}
         zoom={11}
@@ -59,7 +59,7 @@ export function MapPicker({ lat, lng, onPick }: { lat: number; lng: number; onPi
         scrollWheelZoom
       >
         <TileLayer attribution='&copy; OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Rectangle bounds={BANGLADESH_BOUNDS} pathOptions={{ color: "#ea580c", weight: 2, fillColor: "#fdba74", fillOpacity: 0.06 }} />
+        <Rectangle bounds={BANGLADESH_BOUNDS} pathOptions={{ color: "#13544f", weight: 2, fillColor: "#f4b63d", fillOpacity: 0.06 }} />
         <Marker position={position} icon={pickerMarkerIcon} draggable eventHandlers={dragHandlers} />
         <Clicker onPick={onPick} />
         <RecenterOnPosition lat={lat} lng={lng} />

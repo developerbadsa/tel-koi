@@ -13,7 +13,7 @@ const BANGLADESH_BOUNDS: [[number, number], [number, number]] = [
 ];
 
 const stationMarkerIcon = divIcon({
-  html: '<span style="position:relative;display:inline-flex;height:40px;width:40px;align-items:center;justify-content:center;border-radius:9999px;background:#ffffff;border:3px solid #f97316;box-shadow:0 8px 18px rgba(249,115,22,0.35);font-size:18px;"><span style="position:absolute;inset:-7px;border-radius:9999px;border:2px solid rgba(249,115,22,0.35);"></span>&#x26FD;</span>',
+  html: '<span style="position:relative;display:inline-flex;height:40px;width:40px;align-items:center;justify-content:center;border-radius:9999px;background:#f7fbfa;border:3px solid #13544f;box-shadow:0 12px 24px rgba(11,59,55,0.24);font-size:18px;color:#bf7418;"><span style="position:absolute;inset:-7px;border-radius:9999px;border:2px solid rgba(244,182,61,0.5);"></span>&#x26FD;</span>',
   className: "",
   iconAnchor: [20, 20],
   popupAnchor: [0, -18],
@@ -57,17 +57,17 @@ export function MapView({ stations }: { stations: StationItem[] }) {
   );
 
   return (
-    <div className="h-[420px] overflow-hidden rounded-2xl border border-orange-100 bg-white shadow-soft">
+    <div className="h-[420px] overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] shadow-soft">
       <MapContainer center={[23.85, 90.35]} zoom={7} minZoom={5} maxZoom={18} scrollWheelZoom zoomAnimation>
         <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Rectangle bounds={BANGLADESH_BOUNDS} pathOptions={{ color: "#f97316", weight: 2, fillColor: "#fdba74", fillOpacity: 0.08 }} />
+        <Rectangle bounds={BANGLADESH_BOUNDS} pathOptions={{ color: "#13544f", weight: 2, fillColor: "#f4b63d", fillOpacity: 0.08 }} />
         <AutoFitToStations stations={validStations} />
         {validStations.map((m) => (
           <CircleMarker
             key={`${m._id}-ring`}
             center={[m.location.coordinates[1], m.location.coordinates[0]]}
             radius={11}
-            pathOptions={{ color: "#fb923c", weight: 2, fillColor: "#fdba74", fillOpacity: 0.18 }}
+            pathOptions={{ color: "#13544f", weight: 2, fillColor: "#f4b63d", fillOpacity: 0.18 }}
           />
         ))}
         {validStations.map((m) => (
@@ -76,7 +76,7 @@ export function MapView({ stations }: { stations: StationItem[] }) {
               <div className="space-y-1">
                 <p className="font-semibold">{m.name}</p>
                 <p className="text-xs">{m.area}</p>
-                <Link href={`/station/${m._id}`} className="text-sm text-orange-700 underline">
+                <Link href={`/station/${m._id}`} className="text-sm text-[color:var(--petrol)] underline">
                   বিস্তারিত আর ভোট দিন
                 </Link>
               </div>

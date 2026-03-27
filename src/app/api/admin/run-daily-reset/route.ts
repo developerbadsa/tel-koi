@@ -10,7 +10,7 @@ export const POST = withRouteErrorHandling("api.admin.run-daily-reset.post", asy
   const auth = req.headers.get("authorization")?.replace("Bearer ", "");
   if (!env.ADMIN_TOKEN || auth !== env.ADMIN_TOKEN) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  await connectDb();
+  await connectDb("write");
   const voteResult = await Vote.deleteMany({});
   const stationResult = await Station.updateMany(
     {},

@@ -8,6 +8,16 @@ export const queryStationSchema = z.object({
   limit: z.coerce.number().int().positive().max(50).default(20),
 });
 
+const proofImageSchema = z.object({
+  dataUrl: z
+    .string()
+    .trim()
+    .regex(/^data:image\/(jpeg|jpg|png|webp);base64,/i)
+    .max(400_000),
+  fileName: z.string().trim().min(1).max(120),
+  mimeType: z.enum(["image/jpeg", "image/png", "image/webp"]),
+});
+
 export const createStationSchema = z.object({
   name: z.string().trim().min(2).max(120),
   area: z.enum(areas),
@@ -15,6 +25,7 @@ export const createStationSchema = z.object({
   lat: z.number().min(25).max(27),
   lng: z.number().min(88).max(90),
   notes: z.string().trim().max(400).optional().default(""),
+  proofImage: proofImageSchema.optional(),
 });
 
 export const voteSchema = z.object({

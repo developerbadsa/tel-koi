@@ -27,7 +27,7 @@ type Suggestion = {
 type TrendingBlockProps = {
   title: string;
   rows: TrendingRow[];
-  tone: "orange" | "stone" | "zinc";
+  tone: "petrol" | "fuel" | "mist";
 };
 
 const ITEMS_PER_PAGE = 20;
@@ -40,28 +40,28 @@ function suggestionTypeLabel(type: Suggestion["type"]) {
 
 function TrendingBlock({ title, rows, tone }: TrendingBlockProps) {
   const toneClasses =
-    tone === "orange"
-      ? "border-orange-200 bg-orange-50/80"
-      : tone === "stone"
-        ? "border-stone-200 bg-stone-50"
-        : "border-zinc-200 bg-zinc-50";
+    tone === "petrol"
+      ? "border-[color:var(--border)] bg-[rgba(19,84,79,0.08)]"
+      : tone === "fuel"
+        ? "border-[rgba(191,116,24,0.22)] bg-[rgba(244,182,61,0.16)]"
+        : "border-[color:var(--border)] bg-[rgba(255,255,255,0.72)]";
 
   return (
     <article className={`rounded-2xl border p-4 ${toneClasses}`}>
-      <h3 className="mb-3 text-sm font-bold text-zinc-800">{title}</h3>
+      <h3 className="mb-3 text-sm font-bold text-[color:var(--petrol-deep)]">{title}</h3>
       {rows.length > 0 ? (
         <div className="space-y-2">
           {rows.map((r, idx) => (
-            <div key={r._id.toString()} className="flex items-center justify-between rounded-xl bg-white px-3 py-2 text-sm">
-              <p className="line-clamp-1 font-medium text-zinc-700">
+            <div key={r._id.toString()} className="flex items-center justify-between rounded-xl bg-[rgba(255,255,255,0.74)] px-3 py-2 text-sm">
+              <p className="line-clamp-1 font-medium text-[color:var(--text-muted)]">
                 {idx + 1}. {r.station.name}
               </p>
-              <span className="rounded-lg bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-700">{r.total}</span>
+              <span className="rounded-lg bg-[rgba(19,84,79,0.1)] px-2 py-0.5 text-xs font-semibold text-[color:var(--petrol)]">{r.total}</span>
             </div>
           ))}
         </div>
       ) : (
-        <p className="rounded-xl bg-white px-3 py-2 text-sm text-zinc-500">এখনও নতুন রিপোর্ট নেই।</p>
+        <p className="rounded-xl bg-[rgba(255,255,255,0.74)] px-3 py-2 text-sm text-[color:var(--text-soft)]">এখনও নতুন রিপোর্ট নেই।</p>
       )}
     </article>
   );
@@ -135,7 +135,7 @@ export function HomeTabs({ stations, trending, t }: Props) {
     <section className="space-y-4 md:space-y-6">
       <div className="grid gap-2 md:grid-cols-3">
         <div className="relative md:col-span-2">
-          <div className="flex flex-col gap-2 rounded-2xl border border-orange-200 bg-orange-50/70 p-1.5 sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-2 rounded-2xl border border-[color:var(--border)] bg-[linear-gradient(135deg,rgba(19,84,79,0.08),rgba(244,182,61,0.16))] p-1.5 sm:flex-row sm:items-center">
             <input
               aria-label="স্টেশন খোঁজ"
               value={query}
@@ -146,27 +146,27 @@ export function HomeTabs({ stations, trending, t }: Props) {
                 setShowSuggestions(true);
               }}
               placeholder={t.search}
-              className="w-full rounded-xl border border-transparent bg-white px-4 py-2.5 text-sm outline-none ring-orange-300 transition focus:ring"
+              className="w-full rounded-xl border border-transparent bg-[rgba(255,255,255,0.82)] px-4 py-2.5 text-sm text-[color:var(--text)] outline-none ring-[rgba(19,84,79,0.24)] transition focus:ring"
             />
             <a
               href="#list-section"
-              className="inline-flex w-full shrink-0 items-center justify-center rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-700 sm:w-auto"
+              className="inline-flex w-full shrink-0 items-center justify-center rounded-xl bg-[var(--petrol)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--petrol-deep)] sm:w-auto"
             >
               খুঁজুন
             </a>
           </div>
 
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute left-0 right-0 z-20 mt-2 max-h-60 overflow-auto rounded-2xl border border-orange-100 bg-white p-2 shadow-soft">
+            <div className="absolute left-0 right-0 z-20 mt-2 max-h-60 overflow-auto rounded-2xl border border-[color:var(--border)] bg-[rgba(247,251,250,0.96)] p-2 shadow-soft">
               {suggestions.map((s) => (
                 <button
                   key={s.key}
                   type="button"
                   onMouseDown={() => onSuggestionPick(s.label)}
-                  className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left hover:bg-orange-50"
+                  className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left hover:bg-[rgba(19,84,79,0.08)]"
                 >
-                  <span className="line-clamp-1 text-sm text-zinc-700">{s.label}</span>
-                  <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-semibold text-zinc-600">{suggestionTypeLabel(s.type)}</span>
+                  <span className="line-clamp-1 text-sm text-[color:var(--text-muted)]">{s.label}</span>
+                  <span className="rounded-full bg-[rgba(244,182,61,0.16)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--fuel-deep)]">{suggestionTypeLabel(s.type)}</span>
                 </button>
               ))}
             </div>
@@ -177,7 +177,7 @@ export function HomeTabs({ stations, trending, t }: Props) {
           aria-label="এলাকা বাছাই"
           value={area}
           onChange={(e) => setArea(e.target.value)}
-          className="w-full rounded-2xl border border-orange-200 bg-orange-50/70 px-4 py-3 outline-none ring-orange-300 transition focus:ring"
+          className="w-full rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.74)] px-4 py-3 text-[color:var(--text)] outline-none ring-[rgba(19,84,79,0.24)] transition focus:ring"
         >
           <option value="">{t.allAreas}</option>
           {areas.map((a) => (
@@ -189,36 +189,36 @@ export function HomeTabs({ stations, trending, t }: Props) {
       </div>
 
       <div className="grid gap-2 sm:grid-cols-3 md:gap-3">
-        <div className="rounded-2xl border border-orange-200 bg-orange-50/80 p-4">
-          <p className="text-xs font-semibold tracking-wide text-orange-700">দেখানো হচ্ছে</p>
-          <p className="mt-1 text-2xl font-extrabold text-orange-900">{filtered.length}</p>
+        <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(19,84,79,0.09)] p-4">
+          <p className="text-xs font-semibold tracking-wide text-[color:var(--petrol)]">দেখানো হচ্ছে</p>
+          <p className="mt-1 text-2xl font-extrabold text-[color:var(--petrol-deep)]">{filtered.length}</p>
         </div>
-        <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-          <p className="text-xs font-semibold tracking-wide text-zinc-600">এলাকার সংখ্যা</p>
-          <p className="mt-1 text-2xl font-extrabold text-zinc-900">{uniqueAreas}</p>
+        <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.74)] p-4">
+          <p className="text-xs font-semibold tracking-wide text-[color:var(--text-muted)]">এলাকার সংখ্যা</p>
+          <p className="mt-1 text-2xl font-extrabold text-[color:var(--petrol-deep)]">{uniqueAreas}</p>
         </div>
-        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-          <p className="text-xs font-semibold tracking-wide text-stone-700">চলতি রিপোর্ট</p>
-          <p className="mt-1 text-2xl font-extrabold text-stone-900">{trendingTotal}</p>
+        <div className="rounded-2xl border border-[rgba(191,116,24,0.2)] bg-[rgba(244,182,61,0.16)] p-4">
+          <p className="text-xs font-semibold tracking-wide text-[color:var(--fuel-deep)]">চলতি রিপোর্ট</p>
+          <p className="mt-1 text-2xl font-extrabold text-[color:var(--fuel-deep)]">{trendingTotal}</p>
         </div>
       </div>
 
       <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-        <a href="#list-section" className="shrink-0 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50">
+        <a href="#list-section" className="shrink-0 rounded-full border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] px-4 py-2 text-sm font-medium text-[color:var(--text-muted)] transition hover:border-[color:var(--petrol)] hover:text-[color:var(--petrol)]">
           {t.list}
         </a>
-        <a href="#map-section" className="shrink-0 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50">
+        <a href="#map-section" className="shrink-0 rounded-full border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] px-4 py-2 text-sm font-medium text-[color:var(--text-muted)] transition hover:border-[color:var(--petrol)] hover:text-[color:var(--petrol)]">
           {t.map}
         </a>
-        <a href="#trending-section" className="shrink-0 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50">
+        <a href="#trending-section" className="shrink-0 rounded-full border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] px-4 py-2 text-sm font-medium text-[color:var(--text-muted)] transition hover:border-[color:var(--petrol)] hover:text-[color:var(--petrol)]">
           {t.trending}
         </a>
       </div>
 
       <section id="list-section" className="space-y-3">
         <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-          <h3 className="text-lg font-bold text-zinc-900">{t.list}</h3>
-          <p className="text-sm text-zinc-500">
+          <h3 className="text-lg font-bold text-[color:var(--petrol-deep)]">{t.list}</h3>
+          <p className="text-sm text-[color:var(--text-soft)]">
             মোট {filtered.length}টি ফলাফল {filtered.length > 0 ? `(দেখানো হচ্ছে ${startItem}-${endItem})` : ""}
           </p>
         </div>
@@ -242,7 +242,7 @@ export function HomeTabs({ stations, trending, t }: Props) {
                   type="button"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-lg border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] px-3 py-1.5 text-sm text-[color:var(--text-muted)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   আগের
                 </button>
@@ -253,7 +253,11 @@ export function HomeTabs({ stations, trending, t }: Props) {
                       key={pageNumber}
                       type="button"
                       onClick={() => setPage(pageNumber)}
-                      className={`rounded-lg px-3 py-1.5 text-sm ${pageNumber === page ? "bg-orange-600 text-white" : "border border-zinc-200 bg-white text-zinc-700"}`}
+                      className={`rounded-lg px-3 py-1.5 text-sm ${
+                        pageNumber === page
+                          ? "bg-[var(--petrol)] text-white"
+                          : "border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] text-[color:var(--text-muted)]"
+                      }`}
                     >
                       {pageNumber}
                     </button>
@@ -263,7 +267,7 @@ export function HomeTabs({ stations, trending, t }: Props) {
                   type="button"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-lg border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] px-3 py-1.5 text-sm text-[color:var(--text-muted)] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   পরের
                 </button>
@@ -271,21 +275,23 @@ export function HomeTabs({ stations, trending, t }: Props) {
             )}
           </>
         ) : (
-          <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800">এই ফিল্টারে কোনো স্টেশন পাওয়া যায়নি।</div>
+          <div className="rounded-2xl border border-[rgba(191,116,24,0.2)] bg-[rgba(244,182,61,0.16)] p-4 text-sm text-[color:var(--fuel-deep)]">
+            এই ফিল্টারে কোনো স্টেশন পাওয়া যায়নি।
+          </div>
         )}
       </section>
 
       <section id="map-section" className="space-y-3">
-        <h3 className="text-lg font-bold text-zinc-900">{t.map}</h3>
+        <h3 className="text-lg font-bold text-[color:var(--petrol-deep)]">{t.map}</h3>
         <DynamicMap stations={filtered} />
       </section>
 
       <section id="trending-section" className="space-y-3">
-        <h3 className="text-lg font-bold text-zinc-900">{t.trending}</h3>
+        <h3 className="text-lg font-bold text-[color:var(--petrol-deep)]">{t.trending}</h3>
         <div className="grid gap-4 md:grid-cols-3">
-          <TrendingBlock title={t.topYes} rows={trending.topYes} tone="orange" />
-          <TrendingBlock title={t.topNo} rows={trending.topNo} tone="stone" />
-          <TrendingBlock title={t.mostActive} rows={trending.mostActive} tone="zinc" />
+          <TrendingBlock title={t.topYes} rows={trending.topYes} tone="petrol" />
+          <TrendingBlock title={t.topNo} rows={trending.topNo} tone="fuel" />
+          <TrendingBlock title={t.mostActive} rows={trending.mostActive} tone="mist" />
         </div>
       </section>
     </section>

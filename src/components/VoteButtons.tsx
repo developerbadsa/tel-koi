@@ -30,21 +30,23 @@ export function VoteButtons({ stationId, compact = false }: Props) {
     window.location.reload();
   };
 
-  const buttonClass = compact
-    ? "rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition"
-    : "rounded-xl px-4 py-2 text-white";
+  const buttonClass = compact ? "rounded-lg px-3 py-1.5 text-xs font-semibold transition" : "rounded-xl px-4 py-2 transition";
 
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-2 gap-2">
-        <button type="button" className={`${buttonClass} bg-orange-600 hover:bg-orange-700`} onClick={() => vote("YES")}>
+        <button type="button" className={`${buttonClass} bg-[var(--petrol)] text-white shadow-sm hover:bg-[var(--petrol-deep)]`} onClick={() => vote("YES")}>
           তেল আছে
         </button>
-        <button type="button" className={`${buttonClass} bg-zinc-700 hover:bg-zinc-800`} onClick={() => vote("NO")}>
+        <button
+          type="button"
+          className={`${buttonClass} border border-[color:var(--border-strong)] bg-[rgba(255,255,255,0.82)] text-[color:var(--text)] hover:border-[color:var(--fuel-deep)] hover:bg-[var(--fuel-soft)]`}
+          onClick={() => vote("NO")}
+        >
           তেল নেই
         </button>
       </div>
-      {message && <p className="text-xs text-zinc-600">{message}</p>}
+      {message && <p className="text-xs text-[color:var(--text-muted)]">{message}</p>}
     </div>
   );
 }

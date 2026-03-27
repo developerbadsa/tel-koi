@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
 
   try {
-    await connectDb();
+    await connectDb("read");
     const station = await Station.findById(id).lean();
     if (!station) return { title: "স্টেশন পাওয়া যায়নি" };
 
@@ -39,7 +39,7 @@ export default async function StationDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
 
   try {
-    await connectDb();
+    await connectDb("read");
     const station = await Station.findById(id).lean();
     if (!station) notFound();
 
@@ -56,13 +56,13 @@ export default async function StationDetailPage({ params }: { params: Promise<{ 
 
     return (
       <div className="space-y-4">
-        <div className="rounded-2xl border border-orange-100 bg-white p-4 shadow-soft">
-          <h1 className="text-2xl font-semibold text-zinc-900">{station.name}</h1>
-          <p className="mt-1 text-zinc-600">
+        <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] p-4 shadow-soft">
+          <h1 className="text-2xl font-semibold text-[color:var(--petrol-deep)]">{station.name}</h1>
+          <p className="mt-1 text-[color:var(--text-muted)]">
             {station.area} · {station.address || "ঠিকানা দেওয়া হয়নি"}
           </p>
           <a
-            className="mt-3 inline-flex rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-100"
+            className="mt-3 inline-flex rounded-lg border border-[rgba(191,116,24,0.18)] bg-[rgba(244,182,61,0.14)] px-3 py-2 text-sm font-semibold text-[color:var(--fuel-deep)] hover:bg-[rgba(244,182,61,0.22)]"
             href={`https://www.google.com/maps?q=${lat},${lng}`}
             target="_blank"
             rel="noreferrer"
@@ -71,17 +71,25 @@ export default async function StationDetailPage({ params }: { params: Promise<{ 
           </a>
         </div>
 
-        <div className="rounded-2xl border border-orange-100 bg-white p-4 shadow-soft">
-          <p>তেল আছে: {station.aggregates.yesCount} | তেল নেই: {station.aggregates.noCount}</p>
-          <p>বিশ্বাসের মান: {(station.aggregates.confidenceScore * 100).toFixed(1)}%</p>
-          <p>সর্বশেষ রিপোর্ট: {formatTime(station.aggregates.lastVotedAt)}</p>
+        {station.proofImage?.dataUrl && (
+          <section className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] p-4 shadow-soft">
+            <h2 className="mb-2 font-semibold text-[color:var(--petrol-deep)]">লোকেশন প্রুফ ছবি</h2>
+            <img src={station.proofImage.dataUrl} alt={`${station.name} proof`} className="h-auto w-full rounded-2xl object-cover" />
+            <p className="mt-2 text-xs text-[color:var(--text-soft)]">স্টেশন যোগ করার সময় দেওয়া optional proof image।</p>
+          </section>
+        )}
+
+        <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] p-4 shadow-soft">
+          <p className="text-[color:var(--text-muted)]">তেল আছে: {station.aggregates.yesCount} | তেল নেই: {station.aggregates.noCount}</p>
+          <p className="text-[color:var(--text-muted)]">বিশ্বাসের মান: {(station.aggregates.confidenceScore * 100).toFixed(1)}%</p>
+          <p className="text-[color:var(--text-muted)]">সর্বশেষ রিপোর্ট: {formatTime(station.aggregates.lastVotedAt)}</p>
         </div>
 
         <VoteButtons stationId={id} />
 
-        <section className="rounded-2xl border border-orange-100 bg-white p-4 shadow-soft">
-          <h2 className="mb-2 font-semibold text-zinc-900">সর্বশেষ ২০টি রিপোর্ট</h2>
-          <ul className="space-y-1 text-sm text-zinc-600">
+        <section className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] p-4 shadow-soft">
+          <h2 className="mb-2 font-semibold text-[color:var(--petrol-deep)]">সর্বশেষ ২০টি রিপোর্ট</h2>
+          <ul className="space-y-1 text-sm text-[color:var(--text-muted)]">
             {votes.length > 0 ? (
               votes.map((vote) => (
                 <li key={vote._id.toString()}>
@@ -99,7 +107,7 @@ export default async function StationDetailPage({ params }: { params: Promise<{ 
   } catch (error) {
     console.error("[StationDetailPage] Failed to load station details.", error);
     return (
-      <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950">
+      <div className="rounded-2xl border border-[color:var(--danger-border)] bg-[color:var(--danger-soft)] p-4 text-sm text-[color:var(--danger-text)]">
         স্টেশনের তথ্য এখন সাময়িকভাবে পাওয়া যাচ্ছে না। একটু পরে আবার চেষ্টা করুন।
       </div>
     );

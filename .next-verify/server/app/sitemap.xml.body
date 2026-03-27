@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>http://localhost:3000</loc>
+<lastmod>2026-03-27T18:18:03.792Z</lastmod>
+</url>
+<url>
+<loc>http://localhost:3000/about</loc>
+<lastmod>2026-03-27T18:18:03.792Z</lastmod>
+</url>
+<url>
+<loc>http://localhost:3000/add</loc>
+<lastmod>2026-03-27T18:18:03.792Z</lastmod>
+</url>
+<url>
+<loc>http://localhost:3000/station/69c6c6835d7bee7a36f834d2</loc>
+<lastmod>2026-03-27T18:04:03.778Z</lastmod>
+</url>
+</urlset>

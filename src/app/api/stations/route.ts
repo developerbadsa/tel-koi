@@ -9,7 +9,7 @@ import { Station } from "@/models/Station";
 import { SubmissionRate } from "@/models/SubmissionRate";
 
 export const GET = withRouteErrorHandling("api.stations.get", async (req: NextRequest) => {
-  await connectDb();
+  await connectDb("read");
   const parse = queryStationSchema.safeParse(Object.fromEntries(req.nextUrl.searchParams.entries()));
   if (!parse.success) return NextResponse.json({ error: parse.error.flatten() }, { status: 400 });
 
@@ -39,7 +39,7 @@ export const GET = withRouteErrorHandling("api.stations.get", async (req: NextRe
 });
 
 export const POST = withRouteErrorHandling("api.stations.post", async (req: NextRequest) => {
-  await connectDb();
+  await connectDb("write");
   const body = await req.json();
   const parse = createStationSchema.safeParse(body);
   if (!parse.success) return NextResponse.json({ error: parse.error.flatten() }, { status: 400 });
@@ -53,12 +53,18 @@ export const POST = withRouteErrorHandling("api.stations.post", async (req: Next
     return NextResponse.json({ error: `আজকের limit শেষ। দিনে সর্বোচ্চ ${limit}টি স্টেশন add করা যাবে।` }, { status: 429 });
   }
 
-  const { name, area, address, lat, lng } = parse.data;
+  const { name, area, address, lat, lng, proofImage } = parse.data;
   const created = await Station.create({
     name,
     district: siteConfig.district,
     area,
     address,
+    proofImage: proofImage
+      ? {
+          ...proofImage,
+          uploadedAt: now,
+        }
+      : undefined,
     status: "ACTIVE",
     isVerified: false,
     location: { type: "Point", coordinates: [lng, lat] },

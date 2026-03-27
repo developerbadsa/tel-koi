@@ -5,7 +5,7 @@ import { Station } from "@/models/Station";
 import { Vote } from "@/models/Vote";
 
 export const GET = withRouteErrorHandling("api.stations.id.get", async (_: Request, { params }: { params: Promise<{ id: string }> }) => {
-  await connectDb();
+  await connectDb("read");
   const { id } = await params;
   const item = await Station.findById(id).lean();
   if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 });

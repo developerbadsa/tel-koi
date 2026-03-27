@@ -3,6 +3,11 @@ export type StationItem = {
   name: string;
   area: string;
   address?: string;
+  proofImage?: {
+    dataUrl: string;
+    fileName: string;
+    mimeType: "image/jpeg" | "image/png" | "image/webp";
+  };
   location: {
     coordinates: [number, number];
   };

@@ -6,6 +6,12 @@ export interface StationDoc {
   district: string;
   area: string;
   address: string;
+  proofImage?: {
+    dataUrl: string;
+    fileName: string;
+    mimeType: "image/jpeg" | "image/png" | "image/webp";
+    uploadedAt: Date;
+  };
   location: {
     type: "Point";
     coordinates: [number, number];
@@ -28,6 +34,12 @@ const stationSchema = new Schema<StationDoc>(
     district: { type: String, required: true, default: siteConfig.district },
     area: { type: String, required: true },
     address: { type: String, default: "" },
+    proofImage: {
+      dataUrl: { type: String, maxlength: 400000 },
+      fileName: { type: String, maxlength: 120 },
+      mimeType: { type: String, enum: ["image/jpeg", "image/png", "image/webp"] },
+      uploadedAt: { type: Date, default: Date.now },
+    },
     location: {
       type: { type: String, enum: ["Point"], required: true, default: "Point" },
       coordinates: { type: [Number], required: true },

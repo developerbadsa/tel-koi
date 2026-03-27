@@ -9,7 +9,7 @@ import { Station } from "@/models/Station";
 import { Vote } from "@/models/Vote";
 
 export const POST = withRouteErrorHandling("api.stations.id.vote.post", async (req: Request, { params }: { params: Promise<{ id: string }> }) => {
-  await connectDb();
+  await connectDb("write");
   const { id } = await params;
   if (!mongoose.Types.ObjectId.isValid(id)) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
 

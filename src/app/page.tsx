@@ -20,7 +20,7 @@ export default async function HomePage() {
   let totalVotesLast24Hours = 0;
 
   try {
-    await connectDb();
+    await connectDb("read");
 
     const stationDocs = await Station.find({ status: "ACTIVE" })
       .sort({ "aggregates.lastVotedAt": -1, createdAt: -1 })
@@ -71,32 +71,34 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-4 md:space-y-6">
-      <section className="overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-stone-100 via-orange-50 to-amber-50 p-4 text-zinc-900 shadow-lg md:rounded-3xl md:p-7 md:shadow-xl">
+      <section className="overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[linear-gradient(135deg,rgba(11,59,55,0.96),rgba(19,84,79,0.9)_54%,rgba(244,182,61,0.74))] p-4 text-white shadow-soft md:rounded-3xl md:p-7">
         {dbUnavailable && (
-          <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-100/90 px-3 py-2 text-sm text-amber-950">
+          <div className="mb-4 rounded-2xl border border-[color:var(--danger-border)] bg-[color:var(--danger-soft)] px-3 py-2 text-sm text-[color:var(--danger-text)]">
             লাইভ স্টেশন ডেটা এখন সাময়িকভাবে পাওয়া যাচ্ছে না। MongoDB reconnect হলেই তথ্য আবার দেখাবে।
           </div>
         )}
-        <p className="mb-2 inline-flex rounded-full border border-orange-200 bg-white px-3 py-1 text-xs font-semibold tracking-wide text-orange-700">কমিউনিটি লাইভ আপডেট</p>
+        <p className="mb-2 inline-flex rounded-full border border-[rgba(255,255,255,0.2)] bg-[rgba(255,255,255,0.12)] px-3 py-1 text-xs font-semibold tracking-wide text-[color:var(--fuel-soft)]">
+          কমিউনিটি লাইভ আপডেট
+        </p>
         <h1 className="text-2xl font-extrabold leading-tight md:text-4xl">আজ কোথায় পেট্রোল, ডিজেল আর অকটেন পাওয়া যাচ্ছে</h1>
-        <p className="mt-2 max-w-3xl text-sm text-zinc-700 md:mt-3 md:text-base">
+        <p className="mt-2 max-w-3xl text-sm text-[rgba(255,255,255,0.84)] md:mt-3 md:text-base">
           {siteConfig.district} জেলার পাম্পগুলোর রিপোর্ট, ভোট, আর ম্যাপ ভিউ এক জায়গায়। কাছের স্টেশন খুঁজে নিন, তারপর নিজের তথ্যও যোগ করুন।
         </p>
         <div className="mt-4 grid grid-cols-2 gap-2.5 md:mt-5 md:grid-cols-3 md:gap-3">
           {stats.map((item) => (
-            <div key={item.label} className="rounded-xl border border-orange-200/80 bg-white/85 p-3 backdrop-blur md:rounded-2xl md:p-4">
-              <p className="text-xs text-zinc-600">{item.label}</p>
-              <p className="mt-1 text-xl font-bold text-orange-800 md:text-2xl">{item.value}</p>
+            <div key={item.label} className="rounded-xl border border-[rgba(255,255,255,0.16)] bg-[rgba(247,251,250,0.14)] p-3 backdrop-blur md:rounded-2xl md:p-4">
+              <p className="text-xs text-[rgba(255,255,255,0.72)]">{item.label}</p>
+              <p className="mt-1 text-xl font-bold text-[color:var(--fuel-soft)] md:text-2xl">{item.value}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="rounded-2xl border border-orange-100 bg-white p-3 shadow-md md:rounded-3xl md:p-6 md:shadow-lg">
+      <section className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] p-3 shadow-soft md:rounded-3xl md:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-xl font-bold text-zinc-900">লাইভ স্টেশন আপডেট</h2>
-            <p className="text-sm text-zinc-600">প্রতি স্টেশনের ভোট অবস্থা, তেল থাকার সম্ভাবনা আর সাম্প্রতিক রিপোর্ট এখানে দেখা যাবে।</p>
+            <h2 className="text-xl font-bold text-[color:var(--petrol-deep)]">লাইভ স্টেশন আপডেট</h2>
+            <p className="text-sm text-[color:var(--text-muted)]">প্রতি স্টেশনের ভোট অবস্থা, তেল থাকার সম্ভাবনা আর সাম্প্রতিক রিপোর্ট এখানে দেখা যাবে।</p>
           </div>
         </div>
         <HomeTabs stations={stations} trending={trending} t={t} />

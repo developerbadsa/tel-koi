@@ -18,9 +18,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/logo.svg",
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
   },
   openGraph: {
     siteName: siteConfig.name,
@@ -28,13 +28,13 @@ export const metadata: Metadata = {
     description: siteConfig.descriptionBn,
     url: env.NEXT_PUBLIC_APP_URL,
     type: "website",
-    images: [{ url: "/logo.png", width: 512, height: 512, alt: siteConfig.name }],
+    images: [{ url: "/logo.svg", width: 256, height: 256, alt: siteConfig.name }],
   },
   twitter: {
     card: "summary",
     title: siteConfig.name,
     description: siteConfig.descriptionBn,
-    images: ["/logo.png"],
+    images: ["/logo.svg"],
   },
 };
 
