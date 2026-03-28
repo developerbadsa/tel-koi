@@ -294,6 +294,11 @@ export default function AddPage() {
     setGeoStatus(`${station.name} বেছে নেওয়া হয়েছে। ম্যাপে exact pin মিলিয়ে দেওয়া হচ্ছে...`);
     setSearchResults([]);
 
+    pickLocation(station.lat, station.lng);
+    setPinSummary(`${station.name}, ${station.location}`);
+    setGeoStatus(`${station.name} location has been prefilled from the saved station list. Adjust the pin to the gate if needed.`);
+    return;
+    /*
     try {
       setSearching(true);
       const ranked = await searchNominatim(`${station.name}, ${station.location}`, station.area);
@@ -307,6 +312,7 @@ export default function AddPage() {
     } finally {
       setSearching(false);
     }
+    */
   };
 
   const onUseCurrentLocation = () => {

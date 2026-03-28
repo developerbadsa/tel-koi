@@ -26,6 +26,14 @@ export const GET = withRouteErrorHandling("api.stations.get", async (req: NextRe
 
   const [items, total] = await Promise.all([
     Station.find(filter)
+      .select({
+        name: 1,
+        area: 1,
+        address: 1,
+        location: 1,
+        aggregates: 1,
+        createdAt: 1,
+      })
       .sort({ "aggregates.lastVotedAt": -1, createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)

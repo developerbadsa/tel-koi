@@ -1,16 +1,26 @@
+import mongoose from "mongoose";
 import { Vote } from "@/models/Vote";
 import { Station } from "@/models/Station";
 
 export async function refreshStationAggregates(stationId: string) {
-  const sixHoursAgo = new Date(Date.now() - 6 * 60 * 60 * 1000);
-  const [yesCount, noCount, lastVote, recentYesCount, recentNoCount] = await Promise.all([
-    Vote.countDocuments({ stationId, voteType: "YES" }),
-    Vote.countDocuments({ stationId, voteType: "NO" }),
-    Vote.findOne({ stationId }).sort({ createdAt: -1 }).lean(),
-    Vote.countDocuments({ stationId, voteType: "YES", createdAt: { $gte: sixHoursAgo } }),
-    Vote.countDocuments({ stationId, voteType: "NO", createdAt: { $gte: sixHoursAgo } }),
+  const [summary] = await Vote.aggregate<{
+    yesCount: number;
+    noCount: number;
+    lastVotedAt: Date | null;
+  }>([
+    { $match: { stationId: new mongoose.Types.ObjectId(stationId) } },
+    {
+      $group: {
+        _id: "$stationId",
+        yesCount: { $sum: { $cond: [{ $eq: ["$voteType", "YES"] }, 1, 0] } },
+        noCount: { $sum: { $cond: [{ $eq: ["$voteType", "NO"] }, 1, 0] } },
+        lastVotedAt: { $max: "$createdAt" },
+      },
+    },
   ]);
 
+  const yesCount = summary?.yesCount ?? 0;
+  const noCount = summary?.noCount ?? 0;
   const total = yesCount + noCount;
   const confidenceScore = total === 0 ? 0.5 : yesCount / total;
 
@@ -18,12 +28,10 @@ export async function refreshStationAggregates(stationId: string) {
     $set: {
       "aggregates.yesCount": yesCount,
       "aggregates.noCount": noCount,
-      "aggregates.lastVotedAt": lastVote?.createdAt ?? null,
+      "aggregates.lastVotedAt": summary?.lastVotedAt ?? null,
       "aggregates.confidenceScore": confidenceScore,
-      "aggregates.recentYesCount": recentYesCount,
-      "aggregates.recentNoCount": recentNoCount,
     },
   });
 
-  return { yesCount, noCount, confidenceScore, lastVotedAt: lastVote?.createdAt ?? null };
+  return { yesCount, noCount, confidenceScore, lastVotedAt: summary?.lastVotedAt ?? null };
 }

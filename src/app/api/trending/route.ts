@@ -23,8 +23,11 @@ export const GET = withRouteErrorHandling("api.trending.get", async (req: NextRe
     {
       $lookup: {
         from: "stations",
-        localField: "_id",
-        foreignField: "_id",
+        let: { stationId: "$_id" },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$_id", "$$stationId"] } } },
+          { $project: { name: 1 } },
+        ],
         as: "station",
       },
     },

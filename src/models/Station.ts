@@ -58,5 +58,6 @@ const stationSchema = new Schema<StationDoc>(
 
 stationSchema.index({ location: "2dsphere" });
 stationSchema.index({ area: 1, status: 1 });
+stationSchema.index({ status: 1, "aggregates.lastVotedAt": -1, createdAt: -1 });
 
 export const Station = (models.Station as Model<StationDoc>) || model<StationDoc>("Station", stationSchema);

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { connectDb } from "@/lib/db";
 import { getVoterKeyHash } from "@/lib/hash";
+import { checkVoteRateLimit } from "@/lib/rate-limit";
 import { withRouteErrorHandling } from "@/lib/route-handler";
 import { refreshStationAggregates } from "@/lib/station";
 import { voteSchema } from "@/lib/validation";
@@ -21,9 +22,15 @@ export const POST = withRouteErrorHandling("api.stations.id.vote.post", async (r
   if (!station || station.status !== "ACTIVE") return NextResponse.json({ error: "Station not found" }, { status: 404 });
 
   const voterKeyHash = await getVoterKeyHash();
-  const hasVotedBefore = await Vote.exists({ voterKeyHash, stationId: id });
-  if (hasVotedBefore) {
-    return NextResponse.json({ error: "আপনি এই স্টেশনে আগেই ভোট দিয়েছেন। একজন ব্যবহারকারী এক স্টেশনে একবারই ভোট দিতে পারবেন।" }, { status: 409 });
+  const rateLimit = await checkVoteRateLimit(voterKeyHash, id);
+  if (!rateLimit.ok) {
+    return NextResponse.json(
+      {
+        error: "আপনি একটু আগেই ভোট দিয়েছেন। কিছুক্ষণ পরে আবার চেষ্টা করুন।",
+        nextAllowedAt: rateLimit.nextAllowedAt,
+      },
+      { status: 429 },
+    );
   }
 
   await Vote.create({ stationId: id, voteType: parse.data.voteType, voterKeyHash });

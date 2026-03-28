@@ -1,12 +1,19 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { StationCard } from "@/components/StationCard";
 import { areas } from "@/i18n/dict";
 import type { HomeDictionary, StationItem, TrendingRow } from "@/types/station";
 
-const DynamicMap = dynamic(() => import("@/components/MapView").then((m) => m.MapView), { ssr: false });
+const DynamicMap = dynamic(() => import("@/components/MapView").then((m) => m.MapView), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[420px] items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] px-4 text-sm text-[color:var(--text-soft)] shadow-soft">
+      ম্যাপ লোড হচ্ছে...
+    </div>
+  ),
+});
 
 type Props = {
   stations: StationItem[];
@@ -72,6 +79,8 @@ export function HomeTabs({ stations, trending, t }: Props) {
   const [area, setArea] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [page, setPage] = useState(1);
+  const [shouldRenderMap, setShouldRenderMap] = useState(false);
+  const mapSectionRef = useRef<HTMLElement | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
@@ -81,6 +90,7 @@ export function HomeTabs({ stations, trending, t }: Props) {
       return areaOk && (!q || text.includes(q));
     });
   }, [stations, query, area]);
+  const deferredStations = useDeferredValue(filtered);
 
   const suggestions = useMemo<Suggestion[]>(() => {
     const q = query.trim().toLowerCase();
@@ -122,6 +132,29 @@ export function HomeTabs({ stations, trending, t }: Props) {
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
   }, [page, totalPages]);
+
+  useEffect(() => {
+    if (shouldRenderMap) return;
+
+    const node = mapSectionRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") {
+      setShouldRenderMap(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setShouldRenderMap(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "240px 0px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [shouldRenderMap]);
 
   const startItem = filtered.length === 0 ? 0 : pageStart + 1;
   const endItem = Math.min(pageStart + ITEMS_PER_PAGE, filtered.length);
@@ -281,9 +314,15 @@ export function HomeTabs({ stations, trending, t }: Props) {
         )}
       </section>
 
-      <section id="map-section" className="space-y-3">
+      <section id="map-section" ref={mapSectionRef} className="space-y-3">
         <h3 className="text-lg font-bold text-[color:var(--petrol-deep)]">{t.map}</h3>
-        <DynamicMap stations={filtered} />
+        {shouldRenderMap ? (
+          <DynamicMap stations={deferredStations} />
+        ) : (
+          <div className="flex h-[420px] items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] px-4 text-sm text-[color:var(--text-soft)] shadow-soft">
+            নিচে এলে ম্যাপ লোড হবে।
+          </div>
+        )}
       </section>
 
       <section id="trending-section" className="space-y-3">

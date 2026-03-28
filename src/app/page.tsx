@@ -22,25 +22,44 @@ export default async function HomePage() {
   try {
     await connectDb("read");
 
-    const stationDocs = await Station.find({ status: "ACTIVE" })
-      .sort({ "aggregates.lastVotedAt": -1, createdAt: -1 })
-      .limit(100)
-      .lean();
-
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const rows = (await Vote.aggregate([
-      { $match: { createdAt: { $gte: since } } },
-      {
-        $group: {
-          _id: "$stationId",
-          yes: { $sum: { $cond: [{ $eq: ["$voteType", "YES"] }, 1, 0] } },
-          no: { $sum: { $cond: [{ $eq: ["$voteType", "NO"] }, 1, 0] } },
-          total: { $sum: 1 },
+    const [stationDocs, rows] = await Promise.all([
+      Station.find({ status: "ACTIVE" })
+        .select({
+          name: 1,
+          area: 1,
+          address: 1,
+          location: 1,
+          aggregates: 1,
+          createdAt: 1,
+        })
+        .sort({ "aggregates.lastVotedAt": -1, createdAt: -1 })
+        .limit(100)
+        .lean(),
+      Vote.aggregate([
+        { $match: { createdAt: { $gte: since } } },
+        {
+          $group: {
+            _id: "$stationId",
+            yes: { $sum: { $cond: [{ $eq: ["$voteType", "YES"] }, 1, 0] } },
+            no: { $sum: { $cond: [{ $eq: ["$voteType", "NO"] }, 1, 0] } },
+            total: { $sum: 1 },
+          },
         },
-      },
-      { $lookup: { from: "stations", localField: "_id", foreignField: "_id", as: "station" } },
-      { $unwind: "$station" },
-    ])) as Array<TrendingRow & { yes: number; no: number }>;
+        {
+          $lookup: {
+            from: "stations",
+            let: { stationId: "$_id" },
+            pipeline: [
+              { $match: { $expr: { $eq: ["$_id", "$$stationId"] } } },
+              { $project: { name: 1 } },
+            ],
+            as: "station",
+          },
+        },
+        { $unwind: "$station" },
+      ]),
+    ]);
 
     stations = JSON.parse(JSON.stringify(stationDocs)) as StationItem[];
     trending = JSON.parse(
