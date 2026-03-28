@@ -194,6 +194,7 @@ export default function AddPage() {
   const [locationTouched, setLocationTouched] = useState(false);
   const [selectedArea, setSelectedArea] = useState<(typeof areas)[number]>(DEFAULT_AREA);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const [locationQuery, setLocationQuery] = useState("");
   const [searchResults, setSearchResults] = useState<GeoSearchResult[]>([]);
@@ -286,7 +287,7 @@ export default function AddPage() {
     setGeoStatus("লোকেশন সিলেক্ট করা হয়েছে। এখন পাম্পের গেট বা ঢোকার মুখের সাথে পিনটা মিলিয়ে নিন।");
   };
 
-  const onPickKnownStation = async (station: KnownStation) => {
+  const onPickKnownStation = (station: KnownStation) => {
     setStationName(station.name);
     setAddress(station.location);
     setSelectedArea(station.area);
@@ -296,7 +297,7 @@ export default function AddPage() {
 
     pickLocation(station.lat, station.lng);
     setPinSummary(`${station.name}, ${station.location}`);
-    setGeoStatus(`${station.name} location has been prefilled from the saved station list. Adjust the pin to the gate if needed.`);
+    setGeoStatus(`${station.name} location has been prefilled. Gate er upor pin ta ekbar miliye nin.`);
     return;
     /*
     try {
@@ -387,10 +388,14 @@ export default function AddPage() {
     if (proofInputRef.current) proofInputRef.current.value = "";
   };
 
-  const canSubmit = locationTouched && !proofUploading;
+  const canSubmit = locationTouched && agreedToTerms && !proofUploading;
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!agreedToTerms) {
+      setMessage("সাবমিট করার আগে 'আমার নানির দিব্বি তেল দিচ্ছে' তে টিক দিন।");
+      return;
+    }
     if (!locationTouched) {
       setMessage("আগে ম্যাপে সঠিক লোকেশন ঠিক করুন।");
       return;
@@ -425,7 +430,32 @@ export default function AddPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold text-[color:var(--petrol-deep)]">নতুন পাম্প লোকেশন যোগ করুন</h1>
-      <form className="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] p-4 shadow-soft" onSubmit={onSubmit}>
+      <div className="hidden">
+        <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.74)] p-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--petrol)]">Step 1</p>
+          <p className="mt-1 text-sm font-semibold text-[color:var(--petrol-deep)]">Basic info</p>
+          <p className="mt-1 text-xs text-[color:var(--text-soft)]">Pump name, area, ar address diye start korun.</p>
+        </div>
+        <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.74)] p-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--petrol)]">Step 2</p>
+          <p className="mt-1 text-sm font-semibold text-[color:var(--petrol-deep)]">Pick pin</p>
+          <p className="mt-1 text-xs text-[color:var(--text-soft)]">Known station select korle pin auto-fill hobe, na hole map theke set korun.</p>
+        </div>
+        <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.74)] p-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--petrol)]">Optional</p>
+          <p className="mt-1 text-sm font-semibold text-[color:var(--petrol-deep)]">Proof</p>
+          <p className="mt-1 text-xs text-[color:var(--text-soft)]">Gate ba signboard er chobi dile verify korte subidha hoy.</p>
+        </div>
+      </div>
+      <form className="flex flex-col gap-5 rounded-[28px] border border-[color:var(--border)] bg-[rgba(255,255,255,0.86)] p-4 shadow-soft sm:p-5" onSubmit={onSubmit}>
+        <div className="rounded-2xl border border-[rgba(19,84,79,0.08)] bg-[rgba(247,251,250,0.92)] p-4">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--petrol)]">Basic info</p>
+              <p className="mt-1 text-sm text-[color:var(--text-soft)]">Start with the station name, area, and address.</p>
+            </div>
+            <span className="rounded-full bg-[rgba(19,84,79,0.08)] px-3 py-1 text-xs font-medium text-[color:var(--text-muted)]">{selectedArea}</span>
+          </div>
         <input
           className="w-full rounded-xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.82)] p-2 text-[color:var(--text)]"
           name="name"
@@ -458,7 +488,14 @@ export default function AddPage() {
           placeholder="ঠিকানা (ঐচ্ছিক)"
         />
 
-        <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(19,84,79,0.04)] p-3">
+        </div>
+
+        <details className="rounded-2xl border border-[color:var(--border)] bg-[rgba(19,84,79,0.04)] p-3" open={Boolean(proofImage)}>
+          <summary className="cursor-pointer list-none text-sm font-semibold text-[color:var(--petrol-deep)]">
+            Add proof image
+            <span className="ml-2 text-xs font-medium text-[color:var(--text-soft)]">(optional)</span>
+          </summary>
+          <div className="mt-3">
           <label className="mb-1 block text-sm font-medium text-[color:var(--text-muted)]" htmlFor="proof-image">
             প্রুফ ছবি (ঐচ্ছিক)
           </label>
@@ -487,9 +524,19 @@ export default function AddPage() {
               </div>
             </div>
           )}
-        </div>
+          </div>
+        </details>
 
-        <div className="rounded-2xl border border-[color:var(--border)] bg-[linear-gradient(135deg,rgba(19,84,79,0.06),rgba(244,182,61,0.14))] p-3">
+        <div className="order-first rounded-2xl border border-[color:var(--border)] bg-[linear-gradient(135deg,rgba(19,84,79,0.06),rgba(244,182,61,0.14))] p-3">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--petrol)]">Location</p>
+              <p className="mt-1 text-sm text-[color:var(--text-soft)]">Known station search kore pin auto-fill korun, na hole nearby area diye search din.</p>
+            </div>
+            <span className="rounded-full bg-[rgba(255,255,255,0.72)] px-3 py-1 text-xs font-medium text-[color:var(--text-muted)]">
+              {locationTouched ? "Pin confirmed" : "Pin needed"}
+            </span>
+          </div>
           <label className="mb-1 block text-sm font-medium text-[color:var(--text-muted)]" htmlFor="location-search">
             আগে পাম্পের নাম দিয়ে খুঁজুন। না পেলে বাজার, রোড, বা পরিচিত জায়গার নাম লিখে নিচের পিনটা গেটের সাথে মিলিয়ে নিন।
           </label>
@@ -517,7 +564,7 @@ export default function AddPage() {
                       <span className="rounded-full bg-[rgba(19,84,79,0.09)] px-2 py-0.5 text-[10px] font-semibold text-[color:var(--petrol)]">{station.area}</span>
                     </div>
                     <p className="mt-0.5 text-xs text-[color:var(--text-muted)]">{station.location}</p>
-                    <div className="mt-1 flex flex-wrap gap-1">
+                    <div className="hidden">
                       <span className="rounded-full bg-[rgba(244,182,61,0.16)] px-2 py-0.5 text-[10px] font-semibold text-[color:var(--fuel-deep)]">
                         {station.source === "official" ? "Official list" : "Community list"}
                       </span>
@@ -543,10 +590,10 @@ export default function AddPage() {
             </button>
             {searching && <p className="text-sm text-[color:var(--text-soft)]">খোঁজা হচ্ছে...</p>}
           </div>
-          {geoStatus && <p className="mt-2 text-sm text-[color:var(--text-muted)]">{geoStatus}</p>}
+          {geoStatus && <p className="mt-2 text-xs text-[color:var(--text-soft)]">{geoStatus}</p>}
           {geoAccuracy !== null && (
             <p className="mt-1 text-xs text-[color:var(--text-soft)]">
-              GPS accuracy: প্রায় {Math.round(geoAccuracy)} মিটার {geoAccuracy > 100 ? "(ম্যানুয়ালি পিন ঠিক করা ভালো)" : ""}
+              GPS accuracy: প্রায় {Math.round(geoAccuracy)} মিটার
             </p>
           )}
           {searchResults.length > 0 && (
@@ -565,7 +612,7 @@ export default function AddPage() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.82)] p-3">
+        <div className="hidden">
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[color:var(--petrol)]">নির্বাচিত পিনের readable ঠিকানা</p>
           <p className="mt-1 text-sm text-[color:var(--petrol-deep)]">{pinSummary}</p>
           <p className="mt-1 text-xs text-[color:var(--text-soft)]">
@@ -573,6 +620,21 @@ export default function AddPage() {
               ? "পিনের readable ঠিকানা মিলিয়ে নেওয়া হচ্ছে..."
               : "টিপস: পাম্পের গেট, ঢোকার মুখ, বা স্টেশন ফোরকোর্টের একদম কাছাকাছি পিন রাখলে location বেশি accurate হবে।"}
           </p>
+        </div>
+
+        <div className="hidden">
+          <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--petrol)]">Latitude</p>
+            <p className="mt-1 text-sm font-semibold text-[color:var(--petrol-deep)]">{lat.toFixed(6)}</p>
+          </div>
+          <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--petrol)]">Longitude</p>
+            <p className="mt-1 text-sm font-semibold text-[color:var(--petrol-deep)]">{lng.toFixed(6)}</p>
+          </div>
+          <div className="rounded-2xl border border-[color:var(--border)] bg-[rgba(255,255,255,0.78)] p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--petrol)]">Ready</p>
+            <p className="mt-1 text-sm font-semibold text-[color:var(--petrol-deep)]">{locationTouched ? "Yes" : "Set pin first"}</p>
+          </div>
         </div>
 
         <DynamicMapPicker
@@ -583,8 +645,23 @@ export default function AddPage() {
           }}
         />
 
+        <div className="rounded-2xl border border-[rgba(19,84,79,0.1)] bg-[rgba(247,251,250,0.92)] p-4">
+          <p className="text-sm font-semibold text-[color:var(--petrol-deep)]">Submit</p>
+          <p className="mt-1 text-xs text-[color:var(--text-soft)]">Map e pin thik thakle niche button e tap korun.</p>
+          <label className="mt-3 flex items-start gap-3 rounded-xl border border-[color:var(--border)] bg-white/70 px-3 py-3 text-sm text-[color:var(--petrol-deep)]">
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => {
+                setAgreedToTerms(e.target.checked);
+                if (message) setMessage("");
+              }}
+              className="mt-0.5 h-4 w-4 rounded border-[color:var(--border)] text-[color:var(--petrol)] focus:ring-[color:var(--petrol)]"
+            />
+            <span>আমার নানির দিব্যি তেল দিচ্ছে</span>
+          </label>
         <button
-          className="rounded-xl bg-[var(--petrol)] px-4 py-2 text-white hover:bg-[var(--petrol-deep)] disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-3 w-full rounded-xl bg-[var(--petrol)] px-4 py-2.5 text-white hover:bg-[var(--petrol-deep)] disabled:cursor-not-allowed disabled:opacity-60"
           type="submit"
           disabled={!canSubmit}
         >
@@ -592,6 +669,7 @@ export default function AddPage() {
         </button>
         {!locationTouched && <p className="text-xs text-[color:var(--fuel-deep)]">সাবমিটের আগে ম্যাপে লোকেশন একবার ঠিক করুন।</p>}
         {message && <p className="text-sm text-[color:var(--text-muted)]">{message}</p>}
+        </div>
       </form>
       {showSuccessPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
